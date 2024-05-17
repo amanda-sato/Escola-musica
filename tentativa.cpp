@@ -13,7 +13,7 @@ typedef struct {
     char name[MAX_NOME];
     int idade;
     char instrumento_musical[MAX_NOME];
-    int contador_aulas; // Contador de aulas para o aluno
+    int contador_aulas; 
 } Aluno;
 
 typedef struct {
@@ -21,7 +21,7 @@ typedef struct {
     char name[MAX_NOME];
     char instrumento_musical[MAX_NOME];
     char horario[MAX_HORARIO];
-    int contador_aulas; // Contador de aulas para o professor
+    int contador_aulas; 
 } Professor;
 
 typedef struct {
