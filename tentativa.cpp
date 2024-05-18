@@ -1,6 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <direct.h>
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <direct.h>
+#define criarPasta(pasta) _mkdir(pasta)
+#else
+#define criarPasta(pasta) mkdir(pasta, 0777)
+#endif
+
 
 #define MAX_NOME 100
 #define MAX_HORARIO 50
@@ -10,37 +21,170 @@
 
 typedef struct {
     int id;
-    char name[MAX_NOME];
+    char nome[MAX_NOME];
     int idade;
     char instrumento_musical[MAX_NOME];
-    int contador_aulas; 
+    int contador_aulas;
 } Aluno;
 
 typedef struct {
     int id;
-    char name[MAX_NOME];
+    char nome[MAX_NOME];
     char instrumento_musical[MAX_NOME];
     char horario[MAX_HORARIO];
-    int contador_aulas; 
+    int contador_aulas;
 } Professor;
 
 typedef struct {
     int id;
-    int id_aluno;
-    int Professor_id;
+    char nome[MAX_NOME]; // Nome da aula
     char horario[MAX_HORARIO];
-} Aulas;
+    int Professor_id;
+    int id_aluno[MAX_ALUNOS];
+    int contador_alunos;
+} Aula;
 
 
-void addAluno(Aluno *alunos, int *contador_estudante);
-void Listaralunos(Aluno *alunos, int contador_estudante);
-void addProfessor(Professor *professores, int *contador_professor);
-void Listarprofessores(Professor *professores, int contador_professor);
-void addAulas(Aulas *aulas, int *contador_aulas, Aluno *alunos, int contador_estudante, Professor *professores, int contador_professor);
-void Listaraulas(Aulas *aulas, int contador_aulas, Aluno *alunos, int contador_estudante, Professor *professores, int contador_professor);
-void ListarAlunoaulas(Aulas *aulas, int contador_aulas, Aluno *alunos, int contador_estudante, Professor *professores, int contador_professor, int id_aluno);
-void ListarProfessoraulas(Aulas *aulas, int contador_aulas, Aluno *alunos, int contador_estudante, Professor *professores, int contador_professor, int Professor_id);
+void criarPastas() {
+    if (criarPasta("dados") == 0) {
+        printf("Diretório 'dados' criado com sucesso.\n");
+    } else {
+        printf("Erro ao criar diretório 'dados'.\n");
+        return;
+    }
 
+    if (criarPasta("dados/alunos") == 0) {
+        printf("Diretório 'dados/alunos' criado com sucesso.\n");
+    } else {
+        printf("Erro ao criar diretório 'dados/alunos'.\n");
+        return;
+    }
+
+    if (criarPasta("dados/professores") == 0) {
+        printf("Diretório 'dados/professores' criado com sucesso.\n");
+    } else {
+        printf("Erro ao criar diretório 'dados/professores'.\n");
+        return;
+    }
+
+    if (criarPasta("dados/aulas") == 0) {
+        printf("Diretório 'dados/aulas' criado com sucesso.\n");
+    } else {
+        printf("Erro ao criar diretório 'dados/aulas'.\n");
+        return;
+    }
+}
+
+
+
+void salvarDados(
+    Aluno *alunos, 
+    int contador_estudante, 
+    Professor *professores, 
+    int contador_professor, 
+    Aula *aulas, 
+    int contador_aulas
+) {
+    for (int i = 0; i < contador_estudante; i++) {
+        char filename[MAX_NOME];
+        sprintf(filename, "dados/alunos/aluno_%d.txt", alunos[i].id);
+        FILE *file = fopen(filename, "w");
+        if (file) {
+            fprintf(file, "%d\n%s\n%d\n%s\n%d\n", alunos[i].id, alunos[i].nome, alunos[i].idade, alunos[i].instrumento_musical, alunos[i].contador_aulas);
+            fclose(file);
+        } else {
+            printf("Erro ao salvar aluno %d\n", alunos[i].id);
+        }
+    }
+
+    for (int i = 0; i < contador_professor; i++) {
+        char filename[MAX_NOME];
+        sprintf(filename, "professores/professor_%d.txt", professores[i].id);
+        FILE *file = fopen(filename, "w");
+        if (file) {
+            fprintf(file, "%d\n%s\n%s\n%s\n%d\n", professores[i].id, professores[i].nome, professores[i].instrumento_musical, professores[i].horario, professores[i].contador_aulas);
+            fclose(file);
+        } else {
+            printf("Erro ao salvar professor %d\n", professores[i].id);
+        }
+    }
+
+    for (int i = 0; i < contador_aulas; i++) {
+        char filename[MAX_NOME];
+        sprintf(filename, "aulas/aula_%d.txt", aulas[i].id);
+        FILE *file = fopen(filename, "w");
+        if (file) {
+            fprintf(file, "%d\n%d\n", aulas[i].id, aulas[i].Professor_id);
+            for (int j = 0; j < aulas[i].contador_alunos; j++) {
+                fprintf(file, "%d\n", aulas[i].id_aluno[j]);
+            }
+            fprintf(file, "%s\n", aulas[i].horario);
+            fclose(file);
+        } else {
+            printf("Erro ao salvar aula %d\n", aulas[i].id);
+        }
+    }
+}
+
+void carregarDados(Aluno *alunos, int *contador_estudante, Professor *professores, int *contador_professor, Aula *aulas, int *contador_aulas) {
+    FILE *file;
+    char filename[MAX_NOME];
+    int id;
+
+    *contador_estudante = 0;
+    *contador_professor = 0;
+    *contador_aulas = 0;
+
+    for (id = 1; id <= MAX_ALUNOS; id++) {
+        sprintf(filename, "alunos/aluno_%d.txt", id);
+        file = fopen(filename, "r");
+        if (file) {
+            fscanf(file, "%d\n", &alunos[*contador_estudante].id);
+            fgets(alunos[*contador_estudante].nome, MAX_NOME, file);
+            alunos[*contador_estudante].nome[strcspn(alunos[*contador_estudante].nome, "\n")] = 0;  // remove newline
+            fscanf(file, "%d\n", &alunos[*contador_estudante].idade);
+            fgets(alunos[*contador_estudante].instrumento_musical, MAX_NOME, file);
+            alunos[*contador_estudante].instrumento_musical[strcspn(alunos[*contador_estudante].instrumento_musical, "\n")] = 0;  // remove newline
+            fscanf(file, "%d\n", &alunos[*contador_estudante].contador_aulas);
+            fclose(file);
+            (*contador_estudante)++;
+        }
+    }
+
+    for (id = 1; id <= MAX_PROFESSORES; id++) {
+        sprintf(filename, "professores/professor_%d.txt", id);
+        file = fopen(filename, "r");
+        if (file) {
+            fscanf(file, "%d\n", &professores[*contador_professor].id);
+            fgets(professores[*contador_professor].nome, MAX_NOME, file);
+            professores[*contador_professor].nome[strcspn(professores[*contador_professor].nome, "\n")] = 0;  // remove newline
+            fgets(professores[*contador_professor].instrumento_musical, MAX_NOME, file);
+            professores[*contador_professor].instrumento_musical[strcspn(professores[*contador_professor].instrumento_musical, "\n")] = 0;  // remove newline
+            fgets(professores[*contador_professor].horario, MAX_HORARIO, file);
+            professores[*contador_professor].horario[strcspn(professores[*contador_professor].horario, "\n")] = 0;  // remove newline
+            fscanf(file, "%d\n", &professores[*contador_professor].contador_aulas);
+            fclose(file);
+            (*contador_professor)++;
+        }
+    }
+
+    for (id = 1; id <= MAX_AULAS; id++) {
+        sprintf(filename, "aulas/aula_%d.txt", id);
+        file = fopen(filename, "r");
+        if (file) {
+            fscanf(file, "%d\n", &aulas[*contador_aulas].id);
+            fscanf(file, "%d\n", &aulas[*contador_aulas].Professor_id);
+            aulas[*contador_aulas].contador_alunos = 0;
+            while (fscanf(file, "%d\n", &aulas[*contador_aulas].id_aluno[aulas[*contador_aulas].contador_alunos]) == 1) {
+                aulas[*contador_aulas].contador_alunos++;
+            }
+            fgets(aulas[*contador_aulas].horario, MAX_HORARIO, file);
+            aulas[*contador_aulas].horario[strcspn(aulas[*contador_aulas].horario, "\n")] = 0;  // remove newline
+            fclose(file);
+            (*contador_aulas)++;
+        }
+    }
+}
 
 void addAluno(Aluno *alunos, int *contador_estudante) {
     if (*contador_estudante >= MAX_ALUNOS) {
@@ -48,20 +192,20 @@ void addAluno(Aluno *alunos, int *contador_estudante) {
         return;
     }
     alunos[*contador_estudante].id = *contador_estudante + 1; 
-    printf("Enter Aluno name: ");
-    scanf(" %[^\n]", alunos[*contador_estudante].name);
-    printf("Enter Aluno idade: ");
+    printf("Insira o nome do aluno: ");
+    scanf(" %[^\n]", alunos[*contador_estudante].nome);
+    printf("Insira a idade do aluno: ");
     scanf("%d", &alunos[*contador_estudante].idade);
-    printf("Enter Aluno instrumento_musical: ");
+    printf("Insira o instrumento musical do aluno: ");
     scanf(" %[^\n]", alunos[*contador_estudante].instrumento_musical);
     alunos[*contador_estudante].contador_aulas = 0;
     (*contador_estudante)++;
 }
 
-void Listaralunos(Aluno *alunos, int contador_estudante) {
+void listarAlunos(Aluno *alunos, int contador_estudante) {
     for (int i = 0; i < contador_estudante; i++) {
-        printf("ID: %d, Name: %s, idade: %d, instrumento_musical: %s, aulas: %d\n",
-               alunos[i].id, alunos[i].name, alunos[i].idade, alunos[i].instrumento_musical, alunos[i].contador_aulas);
+        printf("ID: %d, nome: %s, idade: %d, instrumento musical: %s, aulas: %d\n",
+               alunos[i].id, alunos[i].nome, alunos[i].idade, alunos[i].instrumento_musical, alunos[i].contador_aulas);
     }
 }
 
@@ -71,140 +215,282 @@ void addProfessor(Professor *professores, int *contador_professor) {
         return;
     }
     professores[*contador_professor].id = *contador_professor + 1; 
-    printf("Enter Professor name: ");
-    scanf(" %[^\n]", professores[*contador_professor].name);
-    printf("Enter instrumento_musical: ");
+    printf("Insira o nome do professor: ");
+    scanf(" %[^\n]", professores[*contador_professor].nome);
+    printf("Insira o instrumento musical do professor: ");
     scanf(" %[^\n]", professores[*contador_professor].instrumento_musical);
-    printf("Enter horario: ");
+    printf("Insira o horário de aula (manhã, tarde ou noite): ");
     scanf(" %[^\n]", professores[*contador_professor].horario);
     professores[*contador_professor].contador_aulas = 0;
     (*contador_professor)++;
 }
 
-void Listarprofessores(Professor *professores, int contador_professor) {
+void listarProfessores(Professor *professores, int contador_professor) {
     for (int i = 0; i < contador_professor; i++) {
-        printf("ID: %d, Name: %s, instrumento_musical: %s, horario: %s, aulas: %d\n",
-               professores[i].id, professores[i].name, professores[i].instrumento_musical, professores[i].horario, professores[i].contador_aulas);
+        printf("ID: %d, nome: %s, instrumento musical: %s, horário: %s, aulas: %d\n",
+               professores[i].id, professores[i].nome, professores[i].instrumento_musical, professores[i].horario, professores[i].contador_aulas);
     }
 }
 
-void addAulas(Aulas *aulas, int *contador_aulas, Aluno *alunos, int contador_estudante, Professor *professores, int contador_professor) {
+void addAula(Aula *aulas, int *contador_aulas) {
     if (*contador_aulas >= MAX_AULAS) {
         printf("Número máximo de aulas alcançado.\n");
         return;
     }
-    int id_aluno, Professor_id;
-
-    aulas[*contador_aulas].id = *contador_aulas + 1; 
-
-    printf("Aluno ID: ");
-    scanf("%d", &id_aluno);
-    int alunoExists = 0;
-    for (int i = 0; i < contador_estudante; i++) {
-        if (alunos[i].id == id_aluno) {
-            alunoExists = 1;
-            alunos[i].contador_aulas++;
-            break;
-        }
-    }
-    if (!alunoExists) {
-        printf("O ID do aluno não foi encontrado.\n");
-        return;
-    }
-
-    printf("Professor ID: ");
-    scanf("%d", &Professor_id);
-    int ProfessorExists = 0;
-    for (int i = 0; i < contador_professor; i++) {
-        if (professores[i].id == Professor_id) {
-            ProfessorExists = 1;
-            professores[i].contador_aulas++;
-            break;
-        }
-    }
-    if (!ProfessorExists) {
-        printf("O ID do professor não foi encontrado.\n");
-        return;
-    }
-
-    aulas[*contador_aulas].id_aluno = id_aluno;
-    aulas[*contador_aulas].Professor_id = Professor_id;
-    printf("Enter horario: ");
+    aulas[*contador_aulas].id = *contador_aulas + 1;
+    aulas[*contador_aulas].contador_alunos = 0;
+    printf("Insira o nome da aula: ");
+    scanf(" %[^\n]", aulas[*contador_aulas].nome);
+    printf("Insira o ID do professor: ");
+    scanf("%d", &aulas[*contador_aulas].Professor_id);
+    printf("Insira um horário (manhã, tarde ou noite): ");
     scanf(" %[^\n]", aulas[*contador_aulas].horario);
     (*contador_aulas)++;
 }
 
-void Listaraulas(Aulas *aulas, int contador_aulas, Aluno *alunos, int contador_estudante, Professor *professores, int contador_professor) {
+void listarAulas(Aula *aulas, int contador_aulas, Aluno *alunos, int contador_estudante, Professor *professores, int contador_professor) {
     for (int i = 0; i < contador_aulas; i++) {
-        char nome_aluno[MAX_NOME] = "Unknown";
-        char nome_professor[MAX_NOME] = "Unknown";
-
-        for (int j = 0; j < contador_estudante; j++) {
-            if (alunos[j].id == aulas[i].id_aluno) {
-                strcpy(nome_aluno, alunos[j].name);
-                break;
-            }
-        }
-
+        char nome_professor[MAX_NOME] = "Desconhecido";
         for (int j = 0; j < contador_professor; j++) {
             if (professores[j].id == aulas[i].Professor_id) {
-                strcpy(nome_professor, professores[j].name);
+                strcpy(nome_professor, professores[j].nome);
                 break;
             }
         }
 
-        printf("Aulas ID: %d, Aluno: %s, Professor: %s, horario: %s\n",
-               aulas[i].id, nome_aluno, nome_professor, aulas[i].horario);
-    }
-}
+        printf("Aula ID: %d, Nome: %s, Professor: %s, Horário: %s, Alunos:\n",
+               aulas[i].id, aulas[i].nome, nome_professor, aulas[i].horario);
 
-void ListarAlunoaulas(Aulas *aulas, int contador_aulas, Aluno *alunos, int contador_estudante, Professor *professores, int contador_professor, int id_aluno) {
-    printf("aulas for Aluno ID %d:\n", id_aluno);
-    for (int i = 0; i < contador_aulas; i++) {
-        if (aulas[i].id_aluno == id_aluno) {
-            char nome_professor[MAX_NOME] = "Unknown";
-            for (int j = 0; j < contador_professor; j++) {
-                if (professores[j].id == aulas[i].Professor_id) {
-                    strcpy(nome_professor, professores[j].name);
+        for (int j = 0; j < aulas[i].contador_alunos; j++) {
+            char nome_aluno[MAX_NOME] = "Desconhecido";
+            for (int k = 0; k < contador_estudante; k++) {
+                if (alunos[k].id == aulas[i].id_aluno[j]) {
+                    strcpy(nome_aluno, alunos[k].nome);
                     break;
                 }
             }
-            printf("Aulas ID: %d, Professor: %s, horario: %s\n",
-                   aulas[i].id, nome_professor, aulas[i].horario);
+            printf("  Aluno ID: %d, Nome: %s\n", aulas[i].id_aluno[j], nome_aluno);
         }
     }
 }
 
-void ListarProfessoraulas(Aulas *aulas, int contador_aulas, Aluno *alunos, int contador_estudante, Professor *professores, int contador_professor, int Professor_id) {
-    printf("aulas for Professor ID %d:\n", Professor_id);
+
+void adicionarAlunoAula(Aula *aulas, int contador_aulas, Aluno *alunos, int contador_estudante) {
+    int id_aula, id_aluno;
+    printf("Insira o ID da aula: ");
+    scanf("%d", &id_aula);
+    printf("Insira o ID do aluno: ");
+    scanf("%d", &id_aluno);
+
     for (int i = 0; i < contador_aulas; i++) {
-        if (aulas[i].Professor_id == Professor_id) {
-            char nome_aluno[MAX_NOME] = "Unknown";
+        if (aulas[i].id == id_aula) {
+            if (aulas[i].contador_alunos >= MAX_ALUNOS) {
+                printf("Número máximo de alunos nesta aula alcançado.\n");
+                return;
+            }
             for (int j = 0; j < contador_estudante; j++) {
-                if (alunos[j].id == aulas[i].id_aluno) {
-                    strcpy(nome_aluno, alunos[j].name);
-                    break;
+                if (alunos[j].id == id_aluno) {
+                    aulas[i].id_aluno[aulas[i].contador_alunos] = id_aluno;
+                    aulas[i].contador_alunos++;
+                    alunos[j].contador_aulas++;
+                    return;
                 }
             }
-            printf("Aulas ID: %d, Aluno: %s, horario: %s\n",
-                   aulas[i].id, nome_aluno, aulas[i].horario);
         }
     }
+    printf("ID da aula ou aluno não encontrado.\n");
 }
+
+void editarAluno(Aluno *alunos, int contador_estudante) {
+    int id;
+    printf("Insira o ID do aluno a editar: ");
+    scanf("%d", &id);
+    for (int i = 0; i < contador_estudante; i++) {
+        if (alunos[i].id == id) {
+            printf("Editar nome (atual: %s): ", alunos[i].nome);
+            scanf(" %[^\n]", alunos[i].nome);
+            printf("Editar idade (atual: %d): ", alunos[i].idade);
+            scanf("%d", &alunos[i].idade);
+            printf("Editar instrumento musical (atual: %s): ", alunos[i].instrumento_musical);
+            scanf(" %[^\n]", alunos[i].instrumento_musical);
+            return;
+        }
+    }
+    printf("Aluno não encontrado.\n");
+}
+
+void editarProfessor(Professor *professores, int contador_professor) {
+    int id;
+    printf("Insira o ID do professor a editar: ");
+    scanf("%d", &id);
+    for (int i = 0; i < contador_professor; i++) {
+        if (professores[i].id == id) {
+            printf("Editar nome (atual: %s): ", professores[i].nome);
+            scanf(" %[^\n]", professores[i].nome);
+            printf("Editar instrumento musical (atual: %s): ", professores[i].instrumento_musical);
+            scanf(" %[^\n]", professores[i].instrumento_musical);
+            printf("Editar horário (atual: %s): ", professores[i].horario);
+            scanf(" %[^\n]", professores[i].horario);
+            return;
+        }
+    }
+    printf("Professor não encontrado.\n");
+}
+
+void editarAula(Aula *aulas, int contador_aulas) {
+    int id;
+    printf("Insira o ID da aula a editar: ");
+    scanf("%d", &id);
+    for (int i = 0; i < contador_aulas; i++) {
+        if (aulas[i].id == id) {
+            printf("Editar nome da aula (atual: %s): ", aulas[i].nome);
+            scanf(" %[^\n]", aulas[i].nome);
+            printf("Editar ID do professor (atual: %d): ", aulas[i].Professor_id);
+            scanf("%d", &aulas[i].Professor_id);
+            printf("Editar horário (atual: %s): ", aulas[i].horario);
+            scanf(" %[^\n]", aulas[i].horario);
+            return;
+        }
+    }
+     printf("Aula não encontrada.\n");
+}
+
+
+void excluirAluno(Aluno *alunos, int *contador_estudante, Aula *aulas, int contador_aulas) {
+    int id;
+    printf("Insira o ID do aluno a excluir: ");
+    scanf("%d", &id);
+    for (int i = 0; i < *contador_estudante; i++) {
+        if (alunos[i].id == id) {
+            for (int j = 0; j < contador_aulas; j++) {
+                for (int k = 0; k < aulas[j].contador_alunos; k++) {
+                    if (aulas[j].id_aluno[k] == id) {
+                        for (int l = k; l < aulas[j].contador_alunos - 1; l++) {
+                            aulas[j].id_aluno[l] = aulas[j].id_aluno[l + 1];
+                        }
+                        aulas[j].contador_alunos--;
+                    }
+                }
+            }
+            for (int j = i; j < *contador_estudante - 1; j++) {
+                alunos[j] = alunos[j + 1];
+            }
+            (*contador_estudante)--;
+            return;
+        }
+    }
+    printf("Aluno não encontrado.\n");
+}
+
+void excluirProfessor(Professor *professores, int *contador_professor, Aula *aulas, int contador_aulas) {
+    int id;
+    printf("Insira o ID do professor a excluir: ");
+    scanf("%d", &id);
+    for (int i = 0; i < *contador_professor; i++) {
+        if (professores[i].id == id) {
+            for (int j = 0; j < contador_aulas; j++) {
+                if (aulas[j].Professor_id == id) {
+                    printf("O professor ID %d está associado a uma aula e não pode ser excluído.\n", id);
+                    return;
+                }
+            }
+            for (int j = i; j < *contador_professor - 1; j++) {
+                professores[j] = professores[j + 1];
+            }
+            (*contador_professor)--;
+            return;
+        }
+    }
+    printf("Professor não encontrado.\n");
+}
+
+void excluirAula(Aula *aulas, int *contador_aulas) {
+    int id;
+    printf("Insira o ID da aula a excluir: ");
+    scanf("%d", &id);
+    for (int i = 0; i < *contador_aulas; i++) {
+        if (aulas[i].id == id) {
+            for (int j = i; j < *contador_aulas - 1; j++) {
+                aulas[j] = aulas[j + 1];
+            }
+            (*contador_aulas)--;
+            return;
+        }
+    }
+    printf("Aula não encontrada.\n");
+}
+
+void listarAulasAlunos(Aula *aulas, int contador_aulas, Aluno *alunos, int contador_estudante) {
+    int id_aluno;
+    printf("Insira o ID do aluno para listar suas aulas: ");
+    scanf("%d", &id_aluno);
+
+    
+    int encontrado = 0;
+    for (int i = 0; i < contador_estudante; i++) {
+        if (alunos[i].id == id_aluno) {
+            encontrado = 1;
+            printf("Aulas do aluno %s (ID: %d):\n", alunos[i].nome, alunos[i].id);
+            for (int j = 0; j < contador_aulas; j++) {
+                for (int k = 0; k < aulas[j].contador_alunos; k++) {
+                    if (aulas[j].id_aluno[k] == id_aluno) {
+                        printf("ID da aula: %d\n", aulas[j].id);
+                        printf("Horário: %s\n", aulas[j].horario);
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+    }
+
+    if (!encontrado) {
+        printf("Aluno não encontrado.\n");
+    }
+}
+
+void listarAulasProfessor(Aula *aulas, int contador_aulas, Professor *professores, int contador_professor) {
+    int id_professor;
+    printf("Insira o ID do professor para listar suas aulas: ");
+    scanf("%d", &id_professor);
+
+    int encontrado = 0;
+    for (int i = 0; i < contador_professor; i++) {
+        if (professores[i].id == id_professor) {
+            encontrado = 1;
+            printf("Aulas do professor %s (ID: %d):\n", professores[i].nome, professores[i].id);
+            for (int j = 0; j < contador_aulas; j++) {
+                if (aulas[j].Professor_id == id_professor) {
+                    printf("ID da aula: %d\n", aulas[j].id);
+                    printf("Horário: %s\n", aulas[j].horario);
+                }
+            }
+            break;
+        }
+    }
+
+    if (!encontrado) {
+        printf("Professor não encontrado.\n");
+    }
+}
+
 
 int main() {
     Aluno alunos[MAX_ALUNOS];
     Professor professores[MAX_PROFESSORES];
-    Aulas aulas[MAX_AULAS];
+    Aula aulas[MAX_AULAS];
     int contador_estudante = 0;
     int contador_professor = 0;
     int contador_aulas = 0;
 
+    criarPastas();
+    carregarDados(alunos, &contador_estudante, professores, &contador_professor, aulas, &contador_aulas);
+
     int escolha;
 
-    while (1) {
-        printf("\n1. Adcionar Aluno\n2. Listar alunos\n3. Adcionar Professor\n4. Listar professores\n5. Adcionar Aulas\n6. Listar aulas\n7. Listar Aluno aulas\n8. Listar Professor aulas\n9. Sair\n");
-        printf("Digite sua escolha: ");
+        while (1) {
+        printf("\n1. Adicionar Aluno\n2. Listar Alunos\n3. Adicionar Professor\n4. Listar Professores\n5. Adicionar Aula\n6. Listar Aulas\n7. Adicionar Aluno a Aula\n8. Editar Aluno\n9. Editar Professor\n10. Editar Aula\n11. Excluir Aluno\n12. Excluir Professor\n13. Excluir Aula\n14. Listar Aulas aluno\n15. Listar Aulas Professor\n16. Salvar Dados\n17. Carregar Dados\n18. Sair\n");
+        printf("Escolha uma opção: ");
         scanf("%d", &escolha);
 
         switch (escolha) {
@@ -212,38 +498,62 @@ int main() {
                 addAluno(alunos, &contador_estudante);
                 break;
             case 2:
-                Listaralunos(alunos, contador_estudante);
+                listarAlunos(alunos, contador_estudante);
                 break;
             case 3:
                 addProfessor(professores, &contador_professor);
                 break;
             case 4:
-                Listarprofessores(professores, contador_professor);
+                listarProfessores(professores, contador_professor);
                 break;
             case 5:
-                addAulas(aulas, &contador_aulas, alunos, contador_estudante, professores, contador_professor);
+                addAula(aulas, &contador_aulas);
                 break;
             case 6:
-                Listaraulas(aulas, contador_aulas, alunos, contador_estudante, professores, contador_professor);
+                listarAulas(aulas, contador_aulas, alunos, contador_estudante, professores, contador_professor);
                 break;
             case 7:
-                printf("Enter Aluno ID: ");
-                int id_aluno;
-                scanf("%d", &id_aluno);
-                ListarAlunoaulas(aulas, contador_aulas, alunos, contador_estudante, professores, contador_professor, id_aluno);
+                adicionarAlunoAula(aulas, contador_aulas, alunos, contador_estudante);
                 break;
             case 8:
-                printf("Enter Professor ID: ");
-                int Professor_id;
-                scanf("%d", &Professor_id);
-                ListarProfessoraulas(aulas, contador_aulas, alunos, contador_estudante, professores, contador_professor, Professor_id);
+                editarAluno(alunos, contador_estudante);
                 break;
             case 9:
+                editarProfessor(professores, contador_professor);
+                break;
+            case 10:
+                editarAula(aulas, contador_aulas);
+                break;
+            case 11:
+                excluirAluno(alunos, &contador_estudante, aulas, contador_aulas);
+                break;
+            case 12:
+                excluirProfessor(professores, &contador_professor, aulas, contador_aulas);
+                break;
+            case 13:
+                excluirAula(aulas, &contador_aulas);
+                break;
+            case 14:
+                listarAulasAlunos(aulas, contador_aulas, alunos, contador_estudante);
+                break;
+            case 15:
+                listarAulasProfessor(aulas, contador_aulas, professores, contador_professor);
+                break;   
+            case 16:
+                salvarDados(alunos, contador_estudante, professores, contador_professor, aulas, contador_aulas);
+                break;
+            case 17:
+                carregarDados(alunos, &contador_estudante, professores, &contador_professor, aulas, &contador_aulas);
+                break;
+            case 18:
+                salvarDados(alunos, contador_estudante, professores, contador_professor, aulas, contador_aulas);
+                printf("Saindo...\n");
                 exit(0);
             default:
-                printf("Escolha inválida. Tente de novo.\n");
+                printf("Opção inválida.\n");
         }
     }
+
     return 0;
 }
 
