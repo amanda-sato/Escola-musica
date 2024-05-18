@@ -19,6 +19,10 @@
 #define MAX_PROFESSORES 100
 #define MAX_AULAS 100
 
+#define DADOS_ALUNOS "dados/alunos/aluno_%d.txt"
+#define DADOS_AULAS "dados/aulas/aula_%d.txt"
+#define DADOS_PROFESSORES "dados/professores/professor_%d.txt"
+
 typedef struct {
     int id;
     char nome[MAX_NOME];
@@ -87,7 +91,7 @@ void salvarDados(
 ) {
     for (int i = 0; i < contador_estudante; i++) {
         char filename[MAX_NOME];
-        sprintf(filename, "dados/alunos/aluno_%d.txt", alunos[i].id);
+        sprintf(filename, DADOS_ALUNOS, alunos[i].id);
         FILE *file = fopen(filename, "w");
         if (file) {
             fprintf(file, "%d\n%s\n%d\n%s\n%d\n", alunos[i].id, alunos[i].nome, alunos[i].idade, alunos[i].instrumento_musical, alunos[i].contador_aulas);
@@ -99,7 +103,7 @@ void salvarDados(
 
     for (int i = 0; i < contador_professor; i++) {
         char filename[MAX_NOME];
-        sprintf(filename, "professores/professor_%d.txt", professores[i].id);
+        sprintf(filename, DADOS_PROFESSORES, professores[i].id);
         FILE *file = fopen(filename, "w");
         if (file) {
             fprintf(file, "%d\n%s\n%s\n%s\n%d\n", professores[i].id, professores[i].nome, professores[i].instrumento_musical, professores[i].horario, professores[i].contador_aulas);
@@ -111,7 +115,7 @@ void salvarDados(
 
     for (int i = 0; i < contador_aulas; i++) {
         char filename[MAX_NOME];
-        sprintf(filename, "aulas/aula_%d.txt", aulas[i].id);
+        sprintf(filename, DADOS_AULAS, aulas[i].id);
         FILE *file = fopen(filename, "w");
         if (file) {
             fprintf(file, "%d\n%d\n", aulas[i].id, aulas[i].Professor_id);
@@ -126,7 +130,14 @@ void salvarDados(
     }
 }
 
-void carregarDados(Aluno *alunos, int *contador_estudante, Professor *professores, int *contador_professor, Aula *aulas, int *contador_aulas) {
+void carregarDados(
+    Aluno *alunos, 
+    int *contador_estudante, 
+    Professor *professores, 
+    int *contador_professor, 
+    Aula *aulas, 
+    int *contador_aulas
+) {
     FILE *file;
     char filename[MAX_NOME];
     int id;
@@ -136,7 +147,7 @@ void carregarDados(Aluno *alunos, int *contador_estudante, Professor *professore
     *contador_aulas = 0;
 
     for (id = 1; id <= MAX_ALUNOS; id++) {
-        sprintf(filename, "alunos/aluno_%d.txt", id);
+        sprintf(filename, DADOS_ALUNOS, id);
         file = fopen(filename, "r");
         if (file) {
             fscanf(file, "%d\n", &alunos[*contador_estudante].id);
@@ -152,7 +163,7 @@ void carregarDados(Aluno *alunos, int *contador_estudante, Professor *professore
     }
 
     for (id = 1; id <= MAX_PROFESSORES; id++) {
-        sprintf(filename, "professores/professor_%d.txt", id);
+        sprintf(filename, DADOS_PROFESSORES, id);
         file = fopen(filename, "r");
         if (file) {
             fscanf(file, "%d\n", &professores[*contador_professor].id);
@@ -169,7 +180,7 @@ void carregarDados(Aluno *alunos, int *contador_estudante, Professor *professore
     }
 
     for (id = 1; id <= MAX_AULAS; id++) {
-        sprintf(filename, "aulas/aula_%d.txt", id);
+        sprintf(filename, DADOS_AULAS, id);
         file = fopen(filename, "r");
         if (file) {
             fscanf(file, "%d\n", &aulas[*contador_aulas].id);
@@ -488,7 +499,7 @@ int main() {
 
     int escolha;
 
-        while (1) {
+    while (1) {
         printf("\n1. Adicionar Aluno\n2. Listar Alunos\n3. Adicionar Professor\n4. Listar Professores\n5. Adicionar Aula\n6. Listar Aulas\n7. Adicionar Aluno a Aula\n8. Editar Aluno\n9. Editar Professor\n10. Editar Aula\n11. Excluir Aluno\n12. Excluir Professor\n13. Excluir Aula\n14. Listar Aulas aluno\n15. Listar Aulas Professor\n16. Salvar Dados\n17. Carregar Dados\n18. Sair\n");
         printf("Escolha uma opção: ");
         scanf("%d", &escolha);
