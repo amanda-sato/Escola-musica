@@ -16,6 +16,7 @@
 
 #define MAX_AULAS 100
 #define MAX_PROFESSORES 100
+#define MAX_ALUNOS 100
 
 #define DADOS_ALUNOS "dados/alunos/aluno_%d.txt"
 #define DADOS_AULAS "dados/aulas/aula_%d.txt"
