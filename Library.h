@@ -47,7 +47,7 @@ void listarAulasProfessor(Aula *aulas, int contador_aulas, Professor *professore
 
 
 
-void addAula(Aula *aulas, int *contador_aulas);
+void addAula(Aula *aulas, int *contador_aulas, Professor *professores, int contador_professor);
 void listarAulas(Aula *aulas, int contador_aulas, Aluno *alunos, int contador_estudante, Professor *professores, int contador_professor);
 void editarAula(Aula *aulas, int contador_aulas);
 void excluirAula(Aula *aulas, int *contador_aulas);
