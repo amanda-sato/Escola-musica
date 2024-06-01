@@ -27,6 +27,14 @@ void listarAlunos(Aluno *alunos, int contador_estudante) {
 }
 
 void editarAluno(Aluno *alunos, int contador_estudante) {
+    for (int i = 0; i < contador_estudante; i++) {
+        printf("-------------------------------\n");
+        printf("Id - %d \n", alunos[i].id);
+        printf("Nome: %s \n", alunos[i].nome);
+        printf("Idade: %d \n", alunos[i].idade);
+        printf("Instrumento musical: %s \n", alunos[i].instrumento_musical);
+        printf("-------------------------------\n");
+    }
     int id;
     printf("Insira o ID do aluno a editar: ");
     scanf("%d", &id);
@@ -45,6 +53,14 @@ void editarAluno(Aluno *alunos, int contador_estudante) {
 }
 
 void excluirAluno(Aluno *alunos, int *contador_estudante, Aula *aulas, int contador_aulas) {
+    for (int i = 0; i < *contador_estudante; i++) {
+        printf("-------------------------------\n");
+        printf("Id - %d \n", alunos[i].id);
+        printf("Nome: %s \n", alunos[i].nome);
+        printf("Idade: %d \n", alunos[i].idade);
+        printf("Instrumento musical: %s \n", alunos[i].instrumento_musical);
+        printf("-------------------------------\n");
+    }
     int id;
     printf("Insira o ID do aluno a excluir: ");
     scanf("%d", &id);
@@ -71,9 +87,26 @@ void excluirAluno(Aluno *alunos, int *contador_estudante, Aula *aulas, int conta
 }
 
 void adicionarAlunoAula(Aula *aulas, int contador_aulas, Aluno *alunos, int contador_estudante) {
+    for (int i = 0; i < contador_aulas; i++) {
+        char nome_professor[MAX_NOME] = "Desconhecido";
+        printf("-------------------------------\n");
+        printf("Id - %d \n", aulas[i].id);
+        printf("Nome: %s \n", aulas[i].nome);
+        printf("Horario: %s \n", aulas[i].horario);
+        printf("Professor Id: %d \n", aulas[i].Professor_id);
+        printf("-------------------------------\n");
+    }
     int id_aula, id_aluno;
     printf("Insira o ID da aula: ");
     scanf("%d", &id_aula);
+    for (int i = 0; i < contador_estudante; i++) {
+        printf("-------------------------------\n");
+        printf("Id - %d \n", alunos[i].id);
+        printf("Nome: %s \n", alunos[i].nome);
+        printf("Idade: %d \n", alunos[i].idade);
+        printf("Instrumento musical: %s \n", alunos[i].instrumento_musical);
+        printf("-------------------------------\n");
+    }
     printf("Insira o ID do aluno: ");
     scanf("%d", &id_aluno);
 
@@ -97,6 +130,14 @@ void adicionarAlunoAula(Aula *aulas, int contador_aulas, Aluno *alunos, int cont
 }
 
 void listarAulasAlunos(Aula *aulas, int contador_aulas, Aluno *alunos, int contador_estudante) {
+    for (int i = 0; i < contador_estudante; i++) {
+        printf("-------------------------------\n");
+        printf("Id - %d \n", alunos[i].id);
+        printf("Nome: %s \n", alunos[i].nome);
+        printf("Idade: %d \n", alunos[i].idade);
+        printf("Instrumento musical: %s \n", alunos[i].instrumento_musical);
+        printf("-------------------------------\n");
+    }
     int id_aluno;
     printf("Insira o ID do aluno para listar suas aulas: ");
     scanf("%d", &id_aluno);
