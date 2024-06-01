@@ -4,7 +4,7 @@
 
 #define MAX_AULAS 100
 
-void addAula(Aula *aulas, int *contador_aulas) {
+void addAula(Aula *aulas, int *contador_aulas, Professor *professores, int contador_professor) {
     if (*contador_aulas >= MAX_AULAS) {
         printf("Número máximo de aulas alcançado.\n");
         return;
@@ -13,6 +13,7 @@ void addAula(Aula *aulas, int *contador_aulas) {
     aulas[*contador_aulas].contador_alunos = 0;
     printf("Insira o nome da aula: ");
     scanf(" %[^\n]", aulas[*contador_aulas].nome);
+    listarProfessores(professores, contador_professor);
     printf("Insira o ID do professor: ");
     scanf("%d", &aulas[*contador_aulas].Professor_id);
     printf("Insira um horário (manhã, tarde ou noite): ");
@@ -47,6 +48,15 @@ void listarAulas(Aula *aulas, int contador_aulas, Aluno *alunos, int contador_es
 }
 
 void editarAula(Aula *aulas, int contador_aulas) {
+    for (int i = 0; i < contador_aulas; i++) {
+        char nome_professor[MAX_NOME] = "Desconhecido";
+        printf("-------------------------------\n");
+        printf("Id - %d \n", aulas[i].id);
+        printf("Nome: %s \n", aulas[i].nome);
+        printf("Horario: %s \n", aulas[i].horario);
+        printf("Professor Id: %d \n", aulas[i].Professor_id);
+        printf("-------------------------------\n");
+    }
     int id;
     printf("Insira o ID da aula a editar: ");
     scanf("%d", &id);
@@ -65,6 +75,15 @@ void editarAula(Aula *aulas, int contador_aulas) {
 }
 
 void excluirAula(Aula *aulas, int *contador_aulas) {
+    for (int i = 0; i < *contador_aulas; i++) {
+        char nome_professor[MAX_NOME] = "Desconhecido";
+        printf("-------------------------------\n");
+        printf("Id - %d \n", aulas[i].id);
+        printf("Nome: %s \n", aulas[i].nome);
+        printf("Horario: %s \n", aulas[i].horario);
+        printf("Professor Id: %d \n", aulas[i].Professor_id);
+        printf("-------------------------------\n");
+    }
     int id;
     printf("Insira o ID da aula a excluir: ");
     scanf("%d", &id);
