@@ -92,7 +92,8 @@ void salvarDados(
         sprintf(filename, DADOS_AULAS, aulas[i].id);
         FILE *file = fopen(filename, "w");
         if (file) {
-            fprintf(file, "%d\n%d\n", aulas[i].id, aulas[i].Professor_id);
+            
+            fprintf(file, "%d\n%s\n%d\n", aulas[i].id, aulas[i].nome ,aulas[i].Professor_id);
             for (int j = 0; j < aulas[i].contador_alunos; j++) {
                 fprintf(file, "%d\n", aulas[i].id_aluno[j]);
             }
@@ -158,6 +159,7 @@ void carregarDados(
         file = fopen(filename, "r");
         if (file) {
             fscanf(file, "%d\n", &aulas[*contador_aulas].id);
+            fscanf(file, "%s\n", &aulas[*contador_aulas].nome);
             fscanf(file, "%d\n", &aulas[*contador_aulas].Professor_id);
             aulas[*contador_aulas].contador_alunos = 0;
             while (fscanf(file, "%d\n", &aulas[*contador_aulas].id_aluno[aulas[*contador_aulas].contador_alunos]) == 1) {
@@ -204,7 +206,7 @@ int main() {
                 listarProfessores(professores, contador_professor);
                 break;
             case 5:
-                addAula(aulas, &contador_aulas);
+                addAula(aulas, &contador_aulas, professores, contador_professor);
                 break;
             case 6:
                 listarAulas(aulas, contador_aulas, alunos, contador_estudante, professores, contador_professor);
