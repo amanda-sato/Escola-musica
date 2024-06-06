@@ -29,6 +29,7 @@ typedef struct {
     int Professor_id;
     int id_aluno[MAX_ALUNOS];
     int contador_alunos;
+    int contador_professores;
 } Aula;
 void addAluno(Aluno *alunos, int *contador_estudante);
 void listarAlunos(Aluno *alunos, int contador_estudante);
@@ -44,6 +45,8 @@ void listarProfessores(Professor *professores, int contador_professor);
 void editarProfessor(Professor *professores, int contador_professor);
 void excluirProfessor(Professor *professores, int *contador_professor, Aula *aulas, int contador_aulas);
 void listarAulasProfessor(Aula *aulas, int contador_aulas, Professor *professores, int contador_professor);
+void adicionarProfessorAula(Aula *aulas, int contador_aulas, Professor *professores, int contador_professor);
+
 
 
 

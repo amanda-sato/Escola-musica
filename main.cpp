@@ -159,7 +159,7 @@ void carregarDados(
         file = fopen(filename, "r");
         if (file) {
             fscanf(file, "%d\n", &aulas[*contador_aulas].id);
-            fscanf(file, "%s\n", &aulas[*contador_aulas].nome);
+            fgets(aulas[*contador_aulas].nome, sizeof(aulas[*contador_aulas].nome), file);
             fscanf(file, "%d\n", &aulas[*contador_aulas].Professor_id);
             aulas[*contador_aulas].contador_alunos = 0;
             while (fscanf(file, "%d\n", &aulas[*contador_aulas].id_aluno[aulas[*contador_aulas].contador_alunos]) == 1) {
@@ -170,7 +170,7 @@ void carregarDados(
             fclose(file);
             (*contador_aulas)++;
         }
-    }
+    } 
 }
 
 void menuAlunos(Aluno *alunos, int *contador_estudante, Aula *aulas, int contador_aula) {
@@ -231,7 +231,8 @@ void menuProfessores(Professor *professores, int *contador_professor, Aula *aula
         printf("3. Excluir Professores\n");
         printf("4. Editar Professores\n");
         printf("5. Listar Aulas de Professores\n");
-        printf("6. Voltar ao Menu Principal\n");
+        printf("6. Adicionar Professor a aula\n");
+        printf("7. Voltar ao Menu Principal\n");
         printf("Escolha uma opção: ");
         
         if (scanf("%d", &escolha) != 1) {
@@ -260,6 +261,9 @@ void menuProfessores(Professor *professores, int *contador_professor, Aula *aula
                 listarAulasProfessor(aulas, contador_aulas, professores, *contador_professor);
                 break;
             case 6:
+                adicionarProfessorAula(aulas, contador_aulas, professores, *contador_professor);
+                break;
+            case 7:
                 return;
             default:
                 printf("Opção inválida. Por favor, escolha uma opção válida.\n");
@@ -276,7 +280,8 @@ void menuAulas(Aula *aulas, int *contador_aulas, Professor *professores, int con
         printf("3. Excluir Aulas\n");
         printf("4. Editar Aulas\n");
         printf("5. Adicionar Alunos em Aula\n");
-        printf("6. Voltar ao Menu Principal\n");
+        printf("6. Adicionar Professor a aula\n");
+        printf("7. Voltar ao Menu Principal\n");
         printf("Escolha uma opção: ");
 
         if (scanf("%d", &escolha) != 1) {
@@ -303,8 +308,11 @@ void menuAulas(Aula *aulas, int *contador_aulas, Professor *professores, int con
                 break;
             case 5:
                 adicionarAlunoAula(aulas, *contador_aulas, alunos, *contador_estudante);
-                break;            
+                break;
             case 6:
+                adicionarProfessorAula(aulas, *contador_aulas, professores, contador_professor);
+                break;                
+            case 7:
                 return;
             default:
                 printf("Opção inválida. Por favor, escolha uma opção válida.\n");

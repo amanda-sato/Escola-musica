@@ -9,17 +9,42 @@ void addAula(Aula *aulas, int *contador_aulas, Professor *professores, int conta
         printf("Número máximo de aulas alcançado.\n");
         return;
     }
+
     aulas[*contador_aulas].id = *contador_aulas + 1;
     aulas[*contador_aulas].contador_alunos = 0;
+    aulas[*contador_aulas].contador_professores = 0;
+
     printf("Insira o nome da aula: ");
     scanf(" %[^\n]", aulas[*contador_aulas].nome);
+
     listarProfessores(professores, contador_professor);
+
+    int professor_id;
     printf("Insira o ID do professor: ");
-    scanf("%d", &aulas[*contador_aulas].Professor_id);
+    scanf("%d", &professor_id);
+
+    // Verifica se o ID do professor é válido e incrementa o contador de aulas do professor
+    int professor_valido = 0;
+    for (int i = 0; i < contador_professor; i++) {
+        if (professores[i].id == professor_id) {
+            aulas[*contador_aulas].Professor_id = professor_id;
+            professores[i].contador_aulas++; // Incrementa o contador de aulas do professor
+            professor_valido = 1;
+            break;
+        }
+    }
+
+    if (!professor_valido) {
+        printf("ID do professor inválido.\n");
+        return;
+    }
+
     printf("Insira um horário (manhã, tarde ou noite): ");
     scanf(" %[^\n]", aulas[*contador_aulas].horario);
+
     (*contador_aulas)++;
 }
+
 
 void listarAulas(Aula *aulas, int contador_aulas, Aluno *alunos, int contador_estudante, Professor *professores, int contador_professor) {
     for (int i = 0; i < contador_aulas; i++) {

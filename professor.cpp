@@ -122,4 +122,49 @@ void listarAulasProfessor(Aula *aulas, int contador_aulas, Professor *professore
     if (!encontrado) {
         printf("Professor não encontrado.\n");
     }
+
 }
+    
+void adicionarProfessorAula(Aula *aulas, int contador_aulas, Professor *professores, int contador_professor) {
+    for (int i = 0; i < contador_aulas; i++) {
+        printf("-------------------------------\n");
+        printf("Id - %d \n", aulas[i].id);
+        printf("Nome: %s \n", aulas[i].nome);
+        printf("Horario: %s \n", aulas[i].horario);
+        printf("-------------------------------\n");
+    }
+    int id_aula, id_professor;
+
+    printf("Insira o ID da aula: ");
+    scanf("%d", &id_aula);
+    for (int i = 0; i < contador_professor; i++) {
+        printf("-------------------------------\n");
+        printf("Id - %d \n", professores[i].id);
+        printf("Nome: %s \n", professores[i].nome);
+        printf("Idade: %d \n", professores[i].horario);
+        printf("Instrumento musical: %s \n", professores[i].instrumento_musical);
+        printf("-------------------------------\n");
+    }
+    printf("Insira o ID do Professor: ");
+    scanf("%d", &id_professor);
+
+    for (int i = 0; i < contador_aulas; i++) {
+        if (aulas[i].id == id_aula) {
+            if (aulas[i].contador_professores >= 1) {
+                printf("Número máximo de professores alcançado.\n");
+                return;
+            }
+            for (int j = 0; j < contador_professor; j++) {
+                if (professores[j].id == id_professor) {
+                    aulas[i].id_aluno[aulas[i].contador_professores] = id_professor;
+                    aulas[i].contador_professores++;
+                    professores[j].contador_aulas++;
+                    return;
+                }
+            }
+        }
+    }
+    printf("ID da aula ou professor não encontrado.\n");
+}
+
+
