@@ -111,6 +111,7 @@ void listarAulasProfessor(Aula *aulas, int contador_aulas, Professor *professore
             for (int j = 0; j < contador_aulas; j++) {
                 if (aulas[j].Professor_id == id_professor) {
                     printf("ID da aula: %d\n", aulas[j].id);
+                    printf("Nome da aula: %s\n", aulas[j].nome);
                     printf("Horário de preferencia: %s\n", aulas[j].horario);
                 }
             }

@@ -64,8 +64,8 @@ void editarAula(Aula *aulas, int contador_aulas, Professor *professores, int con
         if (aulas[i].id == id) {
             printf("Editar nome da aula (atual: %s): ", aulas[i].nome);
             scanf(" %[^\n]", aulas[i].nome);
-            printf("Editar ID do professor (atual: %d): ", aulas[i].Professor_id);
             listarProfessores(professores, contador_professor);
+            printf("Editar ID do professor (atual: %d): ", aulas[i].Professor_id);
             scanf("%d", &aulas[i].Professor_id);
             printf("Editar horário (atual: %s): ", aulas[i].horario);
             scanf(" %[^\n]", aulas[i].horario);
