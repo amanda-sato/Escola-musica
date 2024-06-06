@@ -47,7 +47,7 @@ void listarAulas(Aula *aulas, int contador_aulas, Aluno *alunos, int contador_es
     }
 }
 
-void editarAula(Aula *aulas, int contador_aulas) {
+void editarAula(Aula *aulas, int contador_aulas, Professor *professores, int contador_professor) {
     for (int i = 0; i < contador_aulas; i++) {
         char nome_professor[MAX_NOME] = "Desconhecido";
         printf("-------------------------------\n");
@@ -65,6 +65,7 @@ void editarAula(Aula *aulas, int contador_aulas) {
             printf("Editar nome da aula (atual: %s): ", aulas[i].nome);
             scanf(" %[^\n]", aulas[i].nome);
             printf("Editar ID do professor (atual: %d): ", aulas[i].Professor_id);
+            listarProfessores(professores, contador_professor);
             scanf("%d", &aulas[i].Professor_id);
             printf("Editar horário (atual: %s): ", aulas[i].horario);
             scanf(" %[^\n]", aulas[i].horario);

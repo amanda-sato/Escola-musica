@@ -267,7 +267,7 @@ void menuProfessores(Professor *professores, int *contador_professor, Aula *aula
     } while (1);
 }
 
-void menuAulas(Aula *aulas, int *contador_aulas, Professor *professores, int contador_professor) {
+void menuAulas(Aula *aulas, int *contador_aulas, Professor *professores, int contador_professor, Aluno *alunos, int *contador_estudante) {
     int escolha;
     do {
         printf("\n--- Menu Aulas ---\n");
@@ -275,7 +275,8 @@ void menuAulas(Aula *aulas, int *contador_aulas, Professor *professores, int con
         printf("2. Listar Aulas\n");
         printf("3. Excluir Aulas\n");
         printf("4. Editar Aulas\n");
-        printf("5. Voltar ao Menu Principal\n");
+        printf("5. Adicionar Alunos em Aula\n");
+        printf("6. Voltar ao Menu Principal\n");
         printf("Escolha uma opção: ");
 
         if (scanf("%d", &escolha) != 1) {
@@ -292,15 +293,18 @@ void menuAulas(Aula *aulas, int *contador_aulas, Professor *professores, int con
                 addAula(aulas, contador_aulas, professores, contador_professor);
                 break;
             case 2:
-                listarAulas(aulas, *contador_aulas, NULL, 0, professores, contador_professor);
+                listarAulas(aulas, *contador_aulas, alunos, *contador_estudante, professores, contador_professor);
                 break;
             case 3:
                 excluirAula(aulas, contador_aulas);
                 break;
             case 4:
-                editarAula(aulas, *contador_aulas);
+                editarAula(aulas, *contador_aulas, professores, contador_professor);
                 break;
             case 5:
+                adicionarAlunoAula(aulas, *contador_aulas, alunos, *contador_estudante);
+                return;            
+            case 6:
                 return;
             default:
                 printf("Opção inválida. Por favor, escolha uma opção válida.\n");
@@ -314,9 +318,9 @@ int main() {
     Aluno alunos[MAX_ALUNOS];
     Professor professores[MAX_PROFESSORES];
     Aula aulas[MAX_AULAS];
-    int contador_estudante = 0;
-    int contador_professor = 0;
-    int contador_aulas = 0;
+    int contador_estudante = 000;
+    int contador_professor = 000;
+    int contador_aulas = 000;
 
     criarPastas();
     carregarDados(alunos, &contador_estudante, professores, &contador_professor, aulas, &contador_aulas);
@@ -342,7 +346,7 @@ int main() {
                 menuProfessores(professores, &contador_professor, aulas, contador_aulas);
                 break;
             case 3:
-                menuAulas(aulas, &contador_aulas, professores, contador_professor);
+                menuAulas(aulas, &contador_aulas, professores, contador_professor, alunos, &contador_estudante);
                 break;
             case 4:
                 salvarDados(alunos, contador_estudante, professores, contador_professor, aulas, contador_aulas);
