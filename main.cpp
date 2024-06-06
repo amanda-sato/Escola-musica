@@ -204,16 +204,16 @@ void menuAlunos(Aluno *alunos, int *contador_estudante, Aula *aulas, int contado
                 break;
             case 3:
                 excluirAluno(alunos, contador_estudante, aulas, contador_aula);
-                return;
+                break;
             case 4:
                 editarAluno(alunos, *contador_estudante);
-                return;
+                break;
             case 5:
                 adicionarAlunoAula(aulas, contador_aula, alunos, *contador_estudante);
-                return;
+                break;
             case 6:
                 listarAulasAlunos(aulas, contador_aula, alunos, *contador_estudante);
-                return;
+                break;
             case 7:
                 return;
             default:
@@ -252,13 +252,13 @@ void menuProfessores(Professor *professores, int *contador_professor, Aula *aula
                 break;
             case 3:
                 excluirProfessor(professores, contador_professor, aulas, contador_aulas);
-                return;
+                break;
             case 4:
                 editarProfessor(professores, *contador_professor);
-                return;
+                break;
             case 5:
                 listarAulasProfessor(aulas, contador_aulas, professores, *contador_professor);
-                return;
+                break;
             case 6:
                 return;
             default:
@@ -303,7 +303,7 @@ void menuAulas(Aula *aulas, int *contador_aulas, Professor *professores, int con
                 break;
             case 5:
                 adicionarAlunoAula(aulas, *contador_aulas, alunos, *contador_estudante);
-                return;            
+                break;            
             case 6:
                 return;
             default:
