@@ -173,6 +173,142 @@ void carregarDados(
     }
 }
 
+void menuAlunos(Aluno *alunos, int *contador_estudante, Aula *aulas, int contador_aula) {
+    int escolha;
+    do {
+        printf("\n--- Menu Alunos ---\n");
+        printf("1. Adicionar Aluno\n");
+        printf("2. Listar Alunos\n");
+        printf("3. Excluir Alunos\n");
+        printf("4. Editar Alunos\n");
+        printf("5. Adicionar Aluno a Aula\n");
+        printf("6. Listar Aulas Do Aluno\n");
+        printf("7. Voltar ao Menu Principal\n");
+        printf("Escolha uma opção: ");
+        // Lendo a escolha do usuário
+        if (scanf("%d", &escolha) != 1) {
+            printf("Erro ao ler a escolha. Por favor, insira um número válido.\n");
+            // Limpar o buffer de entrada
+            while (getchar() != '\n');
+            continue; 
+        }
+       
+        while (getchar() != '\n');
+
+        switch (escolha) {
+            case 1:
+                addAluno(alunos, contador_estudante);
+                break;
+            case 2:
+                listarAlunos(alunos, *contador_estudante);
+                break;
+            case 3:
+                excluirAluno(alunos, contador_estudante, aulas, contador_aula);
+                return;
+            case 4:
+                editarAluno(alunos, *contador_estudante);
+                return;
+            case 5:
+                adicionarAlunoAula(aulas, contador_aula, alunos, *contador_estudante);
+                return;
+            case 6:
+                listarAulasAlunos(aulas, contador_aula, alunos, *contador_estudante);
+                return;
+            case 7:
+                return;
+            default:
+                printf("Opção inválida. Por favor, escolha uma opção válida.\n");
+        }
+    } while (1);
+}
+
+void menuProfessores(Professor *professores, int *contador_professor, Aula *aulas, int contador_aulas) {
+    int escolha;
+    do {
+        printf("\n--- Menu Professores ---\n");
+        printf("1. Adicionar Professor\n");
+        printf("2. Listar Professores\n");
+        printf("3. Excluir Professores\n");
+        printf("4. Editar Professores\n");
+        printf("5. Listar Aulas de Professores\n");
+        printf("6. Voltar ao Menu Principal\n");
+        printf("Escolha uma opção: ");
+        
+        if (scanf("%d", &escolha) != 1) {
+            printf("Erro ao ler a escolha. Por favor, insira um número válido.\n");
+        
+            while (getchar() != '\n');
+            continue; 
+        }
+        
+        while (getchar() != '\n');
+        
+        switch (escolha) {
+            case 1:
+                addProfessor(professores, contador_professor);
+                break;
+            case 2:
+                listarProfessores(professores, *contador_professor);
+                break;
+            case 3:
+                excluirProfessor(professores, contador_professor, aulas, contador_aulas);
+                return;
+            case 4:
+                editarProfessor(professores, *contador_professor);
+                return;
+            case 5:
+                listarAulasProfessor(aulas, contador_aulas, professores, *contador_professor);
+                return;
+            case 6:
+                return;
+            default:
+                printf("Opção inválida. Por favor, escolha uma opção válida.\n");
+        }
+    } while (1);
+}
+
+void menuAulas(Aula *aulas, int *contador_aulas, Professor *professores, int contador_professor) {
+    int escolha;
+    do {
+        printf("\n--- Menu Aulas ---\n");
+        printf("1. Adicionar Aula\n");
+        printf("2. Listar Aulas\n");
+        printf("3. Excluir Aulas\n");
+        printf("4. Editar Aulas\n");
+        printf("5. Voltar ao Menu Principal\n");
+        printf("Escolha uma opção: ");
+
+        if (scanf("%d", &escolha) != 1) {
+            printf("Erro ao ler a escolha. Por favor, insira um número válido.\n");
+            
+            while (getchar() != '\n');
+            continue; 
+        }
+
+        while (getchar() != '\n');
+
+        switch (escolha) {
+            case 1:
+                addAula(aulas, contador_aulas, professores, contador_professor);
+                break;
+            case 2:
+                listarAulas(aulas, *contador_aulas, NULL, 0, professores, contador_professor);
+                break;
+            case 3:
+                excluirAula(aulas, contador_aulas);
+                break;
+            case 4:
+                editarAula(aulas, *contador_aulas);
+                break;
+            case 5:
+                return;
+            default:
+                printf("Opção inválida. Por favor, escolha uma opção válida.\n");
+        }
+    } while (1);
+}
+
+
 
 int main() {
     Aluno alunos[MAX_ALUNOS];
@@ -188,63 +324,33 @@ int main() {
     int escolha;
 
     while (1) {
-        printf("\n1. Adicionar Aluno\n2. Listar Alunos\n3. Adicionar Professor\n4. Listar Professores\n5. Adicionar Aula\n6. Listar Aulas\n7. Adicionar Aluno a Aula\n8. Editar Aluno\n9. Editar Professor\n10. Editar Aula\n11. Excluir Aluno\n12. Excluir Professor\n13. Excluir Aula\n14. Listar Aulas aluno\n15. Listar Aulas Professor\n16. Salvar Dados\n17. Carregar Dados\n18. Sair\n");
+        printf("\n--- Menu Principal ---\n");
+        printf("1. Menu Alunos\n");
+        printf("2. Menu Professores\n");
+        printf("3. Menu Aulas\n");
+        printf("4. Salvar Dados\n");
+        printf("5. Carregar Dados\n");
+        printf("6. Sair\n");
         printf("Escolha uma opção: ");
         scanf("%d", &escolha);
 
         switch (escolha) {
             case 1:
-                addAluno(alunos, &contador_estudante);
+                menuAlunos(alunos, &contador_estudante, aulas, contador_aulas);
                 break;
             case 2:
-                listarAlunos(alunos, contador_estudante);
+                menuProfessores(professores, &contador_professor, aulas, contador_aulas);
                 break;
             case 3:
-                addProfessor(professores, &contador_professor);
+                menuAulas(aulas, &contador_aulas, professores, contador_professor);
                 break;
             case 4:
-                listarProfessores(professores, contador_professor);
-                break;
-            case 5:
-                addAula(aulas, &contador_aulas, professores, contador_professor);
-                break;
-            case 6:
-                listarAulas(aulas, contador_aulas, alunos, contador_estudante, professores, contador_professor);
-                break;
-            case 7:
-                adicionarAlunoAula(aulas, contador_aulas, alunos, contador_estudante);
-                break;
-            case 8:
-                editarAluno(alunos, contador_estudante);
-                break;
-            case 9:
-                editarProfessor(professores, contador_professor);
-                break;
-            case 10:
-                editarAula(aulas, contador_aulas);
-                break;
-            case 11:
-                excluirAluno(alunos, &contador_estudante, aulas, contador_aulas);
-                break;
-            case 12:
-                excluirProfessor(professores, &contador_professor, aulas, contador_aulas);
-                break;
-            case 13:
-                excluirAula(aulas, &contador_aulas);
-                break;
-            case 14:
-                listarAulasAlunos(aulas, contador_aulas, alunos, contador_estudante);
-                break;
-            case 15:
-                listarAulasProfessor(aulas, contador_aulas, professores, contador_professor);
-                break;   
-            case 16:
                 salvarDados(alunos, contador_estudante, professores, contador_professor, aulas, contador_aulas);
                 break;
-            case 17:
+            case 5:
                 carregarDados(alunos, &contador_estudante, professores, &contador_professor, aulas, &contador_aulas);
                 break;
-            case 18:
+            case 6:
                 salvarDados(alunos, contador_estudante, professores, contador_professor, aulas, contador_aulas);
                 printf("Saindo...\n");
                 exit(0);
