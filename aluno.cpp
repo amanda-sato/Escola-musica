@@ -151,6 +151,7 @@ void listarAulasAlunos(Aula *aulas, int contador_aulas, Aluno *alunos, int conta
             for (int j = 0; j < contador_aulas; j++) {
                 for (int k = 0; k < aulas[j].contador_alunos; k++) {
                     if (aulas[j].id_aluno[k] == id_aluno) {
+                        printf("Nome da aula: %s\n", aulas[j].nome);
                         printf("ID da aula: %d\n", aulas[j].id);
                         printf("Horário: %s\n", aulas[j].horario);
                         break;
